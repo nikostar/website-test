@@ -4,14 +4,21 @@
 </div>
 <div class="divider"></div>
 <div class="section">
+    <!--
+        For google login. Need Key API though
     <a href="/auth/google" class="btn red darken-1">
         <i class="fab fa-google left"></i> Log In with Google
     </a>
-
-    <form action="/login" method="POST">
+    -->
+    {{#if session.error}}
+    {{#each session.error}}
+    <div class="alert alert-danger">{{this}}</div>
+    {{/each}}
+    {{/if}}
+    <form action="/" method="POST">
     <div>
         <label for="email">Email</label>
-        <input type="text" id="email" name="email" required>
+        <input type="email" id="email" name="email" required>
     </div>
     <div>
         <label for"password">Password</label>
