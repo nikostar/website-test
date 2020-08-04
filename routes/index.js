@@ -1,11 +1,16 @@
 //moving between pages and storing the passwords
+//First call the necessary libraries and create a router. Remember to export router
+
 const express=require('express')
 const passport=require('passport')
-const router=express.Router()
 const bcrypt=require('bcrypt')
 const flash=require('express-flash')
 const session=require('express-session')
 const dotenv= require('dotenv')
+
+const router=express.Router()
+
+
 const initializePassport=require('./../config/passport-config')
 initializePassport(passport,email =>{
     return users.find(user=>user.email===email)
@@ -27,47 +32,16 @@ router.use(passport.session())
 //@route Get /
 router.get('/',(req,res)=>{
     res.locals.session = req.flash(); //.{message:'123232'};
-    res.render('Login',{
+    res.render('welcome',{
         layout: 'login',
     })
-})
-
-//register page
-//@route Get /
-router.get('/register',(req,res)=>{
-    res.render('Register',{
-        layout: 'register',
-    })
-})
-
-router.post('/',passport.authenticate('local',{
-    successRedirect:'/dashboard',
-    failureRedirect: '/',
-    failureFlash: true
-
-}))
-
-router.post('/register',async (req,res)=>{
-    try{
-        const hashedPassword=await bcrypt.hash(req.body.password,10)
-        users.push({
-            id: Date.now().toString(),
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword
-        })
-        res.redirect('/')
-    }catch{
-        res.redirect('/register')
-    }
-    console.log(users)
 })
 
 
 //dashboard page
 //@route Get /dashboard
 router.get('/dashboard',(req,res)=>{
-    res.render('Dashboard')
+    res.render('dashboard')
 })
 
 module.exports=router
