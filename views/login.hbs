@@ -10,6 +10,16 @@
         <i class="fab fa-google left"></i> Log In with Google
     </a>
     -->
+    {{#if success_msg}}
+    {{#each success_msg}}
+    <div class="alert alert-success">{{this}}</div>
+    {{/each}}
+    {{/if}}
+    {{#if error_msg}}
+    {{#each error_msg}}
+    <div class="alert alert-success">{{this}}</div>
+    {{/each}}
+    {{/if}}
     {{#if session.error}}
     {{#each session.error}}
     <div class="alert alert-danger">{{this}}</div>

@@ -4,29 +4,14 @@
 const express=require('express')
 const passport=require('passport')
 const bcrypt=require('bcryptjs')
-const flash=require('express-flash')
-const session=require('express-session')
 const dotenv= require('dotenv')
 
 const router=express.Router()
 const User=require('../models/Users')
 
-const initializePassport=require('./../config/passport-config')
-initializePassport(passport,email =>{
-    return users.find(user=>user.email===email)
-})
 
 dotenv.config({path:'./../config/config.env'})
-router.use(express.urlencoded({extended:false}))
 
-router.use(flash())
-router.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-}))
-router.use(passport.initialize())
-router.use(passport.session())
 //login/landing page
 //@route Get /
 router.get('/login',(req,res)=>{
@@ -44,12 +29,13 @@ router.get('/register',(req,res)=>{
     })
 })
 
-router.post('/login',passport.authenticate('local',{
+router.post('/login',(req,res,next)=>{
+    passport.authenticate('local',{
     successRedirect:'/dashboard',
     failureRedirect: '/users/login',
     failureFlash: true
-
-}))
+    })(req,res,next);
+})
 
 router.post('/register', (req,res)=>{
     try{
@@ -109,9 +95,9 @@ router.post('/register', (req,res)=>{
                             {
                                 if(err) throw err;
                                 newUser.password=hash
-                                console.log('user created')
                                 newUser.save()
                                     .then(user=>{
+                                        req.flash('success_msg','You are now registered. Please log in.')
                                     res.redirect('/users/login')
                                 })
                                     .catch(err=>console.log(err));
@@ -133,6 +119,12 @@ router.post('/register', (req,res)=>{
 //@route Get /dashboard
 router.get('/dashboard',(req,res)=>{
     res.render('Dashboard')
+})
+
+router.get('/logout',(req,res)=>{
+    req.logout();
+    req.flash('success_msg','You are logged out')
+    res.redirect('/users/login')
 })
 
 module.exports=router

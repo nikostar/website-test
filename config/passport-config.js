@@ -1,30 +1,40 @@
 //Script for all passport stuff
 
-const LocalStrategy=require('passport-local').Strategy
-const bcrypt=require('bcrypt')
+const LocalStrategy=require('passport-local').Strategy;
+const bcrypt=require('bcryptjs')
 
-function initialize(passport,getUserByEmail){
-    const authenticateUser=async (email,password,done)=>{
-        const user = getUserByEmail(email)
-        if(user==null){
-            return done(null,false, {message:'No user with that email'})
-        }
+const User=require('../models/Users')
 
-        try{
-            if(await bcrypt.compare(password,user.password)){
-                return done(null,user)
-            }else{
-                return done(null,false, {message:'Password incorrect'})
+module.exports=function(passport){
+    passport.use(new LocalStrategy({usernameField: 'email'}, (email,password,done)=>{
+        User.findOne({email: email})
+        .then(user=>{
+            if(!user){
+                return done(null,false, {message:'No user with that email'})
             }
-        }catch(e){
-            return done(e)
-        }
-        console.log(message)
-    }
+
+            
+            bcrypt.compare(password,user.password,(err,isMatch)=>{
+                if(err) throw err;
+
+                if(isMatch){
+                    return done(null,user);
+                }else{
+                    return done(null,false, {message:'Password incorrect'})
+                }
+            })
+              
+        })
+    })
+    )
     
-    passport.use(new LocalStrategy({usernameField: 'email'}, authenticateUser))
-    passport.serializeUser((user,done)=>{ })
-    passport.deserializeUser((id,done)=>{ })
+    passport.serializeUser((user,done)=>{
+        done(null,user.id)
+     })
+    passport.deserializeUser((id,done)=>{
+        User.findById(id,function(err,user){
+            done(err,user)
+        })
+     })
 }
 
-module.exports=initialize
