@@ -9,12 +9,14 @@ const dotenv= require('dotenv')
 const router=express.Router()
 const User=require('../models/Users')
 
+const{ensureAuthenticated,ensureGuest}=require('../config/auth')
+
 
 dotenv.config({path:'./../config/config.env'})
 
 //login/landing page
 //@route Get /
-router.get('/login',(req,res)=>{
+router.get('/login', ensureGuest,(req,res)=>{
     res.locals.session = req.flash(); //.{message:'123232'};
     res.render('Login',{
         layout: 'login',
