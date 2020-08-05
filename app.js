@@ -1,13 +1,14 @@
 const path=require('path')
 const express= require('express')
 const morgan=require('morgan')
+const mongoose=require('mongoose')
 const connectDB=require('./config/db')
 const exphbs=require('express-handlebars')
 const dotenv= require('dotenv')
 const flash=require('express-flash')
 const passport=require('passport')
 const session=require('express-session')
-
+const MongoStore=require('connect-mongo')(session)
 const app=express()
 
 //load config... Private variables
@@ -42,7 +43,8 @@ app.use(flash())
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: new MongoStore({mongooseConnection: mongoose.connection})
 }))
 
 //Passport middleware
