@@ -5,6 +5,7 @@ const mongoose=require('mongoose')
 const connectDB=require('./config/db')
 const exphbs=require('express-handlebars')
 const dotenv= require('dotenv')
+const methodOverride=require('method-override')
 const flash=require('express-flash')
 const passport=require('passport')
 const session=require('express-session')
@@ -25,17 +26,35 @@ connectDB()
 if(process.env.NODE_ENV==='development'){
     app.use(morgan('dev'))
 }
+//body parser
+app.use(express.urlencoded({extended:false}))
+app.use(express.json())
+
+// Method override
+app.use(
+    methodOverride(function (req, res) {
+      if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+        // look in urlencoded POST bodies and delete it
+        let method = req.body._method
+        delete req.body._method
+        return method
+      }
+    })
+)
+
+//Handlebar helpers
+const{formatDate,stripTags,editIcon,truncate,select}=require('./helpers/hbs')
 
 //handlebars for webpages
-app.engine('.hbs',exphbs({defaultLayout: 'main', extname: '.hbs'}));
+app.engine('.hbs',exphbs({helpers:{formatDate,stripTags,editIcon,truncate,select},
+    defaultLayout: 'main', 
+    extname: '.hbs'}));
 app.set('view engine', '.hbs');
 
 //Static folder for css stuff
 app.use(express.static(path.join(__dirname,'public')))
 
-//body parser
-app.use(express.urlencoded({extended:false}))
-app.use(express.json())
+
 
 
 
@@ -53,7 +72,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
+//global variables
+
 app.use((req,res,next)=>{
+    res.locals.user=req.user||null
     res.locals.success_msg=req.flash('success_msg');
     res.locals.error_msg=req.flash('error_msg');
     next();
