@@ -34,7 +34,8 @@ app.set('view engine', '.hbs');
 app.use(express.static(path.join(__dirname,'public')))
 
 //body parser
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({extended:false}))
+app.use(express.json())
 
 
 
@@ -63,7 +64,7 @@ app.use((req,res,next)=>{
 //Routes. Folder to route the pages for order
 app.use('/',require('./routes/index'))
 app.use('/users',require('./routes/users'))
-
+app.use('/stories',require('./routes/stories'))
 
 
 const PORT=process.env.PORT||3000
