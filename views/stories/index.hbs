@@ -8,10 +8,17 @@
             </div>
             <div class="card-content center-align">
                 <h5>{{title}}</h5>
-                <p>{{stripTags (truncate body 150)}}</p>
+                <div class="img-coverholder">
+                {{#if coverImage}}
+                <img class="img-cover" src="<%= book.coverImagePath %>">
+                {{else}}
+                <img class="img-cover" src="https://i.pinimg.com/originals/b4/00/85/b400851a6b07f8877a9236f275bd8d4f.jpg">
+                {{/if}}
+                </div>
+                <p>{{stripTags (truncate body 100)}}</p>
                 <br>
                 <div class="chip">
-                    <img src="{{user.image}}" alt="">
+                    <img src="https://i.pinimg.com/originals/b4/00/85/b400851a6b07f8877a9236f275bd8d4f.jpg">
                     <a href="/stories/user/{{user._id}}">{{user.name}}</a>
                 </div>
             </div>

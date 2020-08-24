@@ -6,6 +6,8 @@ const{ensureAuthenticated}=require('../config/auth')
 //story model
 const Story=require('../models/Story')
 
+const imageMimeTypes = ['image/jpeg', 'image/png']
+
 
 //show add page
 //@route Get /stories/add
@@ -18,9 +20,11 @@ router.get('/add',ensureAuthenticated,(req,res)=>{
 //@route POST /stories
 router.post('/',ensureAuthenticated, async(req,res)=>{
     try{
-        req.body.user=req.user.id
-        await Story.create(req.body)
-        res.redirect('/dashboard')
+      const book=new Story()
+      req.body.user=req.user.id
+      saveCover(book, req.body.cover)
+      await Story.create(req.body)
+      res.redirect('/dashboard')
     } catch(err){
         console.log(err)
     }
@@ -152,5 +156,14 @@ router.get('/user/:userId', ensureAuthenticated, async (req, res) => {
       console.error(err)
     }
   })
+
+  function saveCover(book, coverEncoded) {
+    if (coverEncoded == null) return
+    const cover = JSON.parse(coverEncoded)
+    if (cover != null && imageMimeTypes.includes(cover.type)) {
+      book.coverImage = new Buffer.from(cover.data, 'base64')
+      book.coverImageType = cover.type
+    }
+  }
 
 module.exports=router

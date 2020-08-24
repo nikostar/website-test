@@ -11,6 +11,15 @@
 
         <div class="row">
             <div class="input-field">
+                Cover
+                <br>
+                <input type="file" id="cover" name="cover" class="filepond">
+                <label for="cover"></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field">
                 <select id="status" name="status">
                     {{#select story.status}}
                     <option value="public" selected>Public</option>
